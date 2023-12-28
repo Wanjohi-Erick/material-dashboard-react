@@ -1,18 +1,4 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
+import React, { useEffect, useState } from 'react';
 // @mui material components
 import Grid from "@mui/material/Grid";
 
@@ -37,6 +23,55 @@ import OrdersOverview from "layouts/dashboard/components/OrdersOverview";
 
 function Dashboard() {
   const { sales, tasks } = reportsLineChartData;
+    const [titheData, setTitheData] = useState([]);
+    const [incomeData, setIncomeData] = useState([]);
+    const [expensesData, setExpensesData] = useState([]);
+
+    const getTithe = async () => {
+        // Implement your tithe API call logic here
+        // Example:
+        // const response = await axios.get('/api/getTithe');
+        // return response.data;
+        return [];
+    };
+
+    const getMonthlyIncome = async () => {
+        // Implement your monthly income API call logic here
+        // Example:
+        // const response = await axios.get('/api/getMonthlyIncome');
+        // return response.data;
+        return [];
+    };
+
+    const getMonthlyExpenses = async () => {
+        // Implement your monthly expenses API call logic here
+        // Example:
+        // const response = await axios.get('/api/getMonthlyExpenses');
+        // return response.data;
+        return {};
+    };
+
+    useEffect(() => {
+        // Fetch data for tithe, income, and expenses
+        const fetchData = async () => {
+            try {
+                const titheResponse = await getTithe();
+                const incomeResponse = await getMonthlyIncome();
+                const expensesResponse = await getMonthlyExpenses();
+
+                setTitheData(titheResponse.data);
+                setIncomeData(incomeResponse.data);
+                setExpensesData({
+                    labels: ["Apr", "May", "Jun", "Jul", "Aug", "Sep", "Oct", "Nov", "Dec"],
+                    datasets: { label: "Desktop apps", data: [50, 40, 300, 220, 500, 250, 400, 230, 500] },
+                });
+            } catch (error) {
+                console.error('Error fetching data:', error);
+            }
+        };
+
+        fetchData();
+    }, []);
 
   return (
     <DashboardLayout>
@@ -138,7 +173,7 @@ function Dashboard() {
                   title="completed tasks"
                   description="Last Campaign Performance"
                   date="just updated"
-                  chart={tasks}
+                  chart={expensesData}
                 />
               </MDBox>
             </Grid>

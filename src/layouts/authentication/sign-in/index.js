@@ -1,22 +1,8 @@
-/**
-=========================================================
-* Material Dashboard 2 React - v2.2.0
-=========================================================
-
-* Product Page: https://www.creative-tim.com/product/material-dashboard-react
-* Copyright 2023 Creative Tim (https://www.creative-tim.com)
-
-Coded by www.creative-tim.com
-
- =========================================================
-
-* The above copyright notice and this permission notice shall be included in all copies or substantial portions of the Software.
-*/
-
 import { useState } from "react";
 
 // react-router-dom components
 import { Link } from "react-router-dom";
+import { useNavigate } from "react-router-dom";
 
 // @mui material components
 import Card from "@mui/material/Card";
@@ -40,15 +26,51 @@ import BasicLayout from "layouts/authentication/components/BasicLayout";
 
 // Images
 import bgImage from "assets/images/bg-sign-in-basic.jpeg";
+import ApiService from "../../../ApiService";
 
 function Basic() {
+  const navigate = useNavigate();
+  const [username, setUsername] = useState("");
+  const [password, setPassword] = useState("");
   const [rememberMe, setRememberMe] = useState(false);
+  const [loginError, setLoginError] = useState(false);
+  const [logoutSuccess, setLogoutSuccess] = useState(false);
 
   const handleSetRememberMe = () => setRememberMe(!rememberMe);
+
+  const handleLogin = () => {
+    // Simulate a login request
+    ApiService.post("api/auth/signin", { username, password })
+      .then((response) => {
+        // Assuming the server responds with a token on successful login
+        const token = response.data.token;
+
+        // Set the token in the Authorization header
+        ApiService.setAuthorizationToken(token);
+
+        // Handle successful login
+        console.log("Login successful:", response.data);
+
+        setLoginError(false);
+        setLogoutSuccess(false);
+
+        navigate("/dashboard");
+      })
+      .catch((error) => {
+        // Handle login error
+        console.error("Login error:", error);
+        setLoginError(true);
+      });
+  };
 
   return (
     <BasicLayout image={bgImage}>
       <Card>
+        {loginError && <div className="alert alert-error">Invalid Username or Password.</div>}
+
+        {/* Display logout success message */}
+        {logoutSuccess && <div className="alert alert-success">You have been logged out.</div>}
+
         <MDBox
           variant="gradient"
           bgColor="info"
@@ -84,10 +106,22 @@ function Basic() {
         <MDBox pt={4} pb={3} px={3}>
           <MDBox component="form" role="form">
             <MDBox mb={2}>
-              <MDInput type="email" label="Email" fullWidth />
+              <MDInput
+                type="text"
+                label="Username"
+                fullWidth
+                value={username}
+                onChange={(e) => setUsername(e.target.value)}
+              />
             </MDBox>
             <MDBox mb={2}>
-              <MDInput type="password" label="Password" fullWidth />
+              <MDInput
+                type="password"
+                label="Password"
+                fullWidth
+                value={password}
+                onChange={(e) => setPassword(e.target.value)}
+              />
             </MDBox>
             <MDBox display="flex" alignItems="center" ml={-1}>
               <Switch checked={rememberMe} onChange={handleSetRememberMe} />
@@ -102,7 +136,7 @@ function Basic() {
               </MDTypography>
             </MDBox>
             <MDBox mt={4} mb={1}>
-              <MDButton variant="gradient" color="info" fullWidth>
+              <MDButton variant="gradient" color="info" fullWidth onClick={handleLogin}>
                 sign in
               </MDButton>
             </MDBox>
